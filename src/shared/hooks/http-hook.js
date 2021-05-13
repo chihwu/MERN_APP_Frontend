@@ -10,7 +10,7 @@ export const useHttpClient = () => {
     const sendRequest = useCallback(async (url, method = 'GET', body = null, headers = {}) => {
 
         setIsLoading(true);
-        const httpAbortCtrll = new AbortController();
+        const httpAbortCtrll = new AbortController();  // the AbortController is used so that any lingering request between any rendering cycle will be cleared.
         activeHttpRequests.current.push(httpAbortCtrll);
 
         try {
@@ -18,7 +18,8 @@ export const useHttpClient = () => {
                 method,
                 body,
                 headers,
-                signal: httpAbortCtrll.signal
+                signal: httpAbortCtrll.signal    // this associates the signal and controller with the fetch request and allows us to abort it by calling AbortController.abort()
+                                                 // When abort() is called, the fetch() promist rejects with an AbortError
             });
 
             const responseData = await response.json();
